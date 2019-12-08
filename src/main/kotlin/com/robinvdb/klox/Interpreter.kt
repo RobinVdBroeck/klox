@@ -3,6 +3,7 @@ package com.robinvdb.klox
 import com.robinvdb.klox.errors.RuntimeError
 import kotlin.contracts.contract
 
+
 fun checkNumberOperand(operatorToken: Token, operand: Any?) {
     contract {
         returns() implies (operand is Double)
@@ -86,6 +87,26 @@ class Interpreter(private val ctx: Context) : Visitor<Any?> {
         }
     }
 
+    override fun visitCallExpression(callExpression: CallExpression): Any? {
+        val callee = evaluate(callExpression.callee)
+
+        if (callee !is LoxCallable) {
+            throw RuntimeError(
+                "Can only call functions and classes.",
+                callExpression.paren
+            )
+        }
+
+
+        val arguments = callExpression.arguments.map { evaluate(it) }
+
+        if(callee.arity != arguments.size) {
+            throw RuntimeError("Expected ${callee.arity} arguments but got ${arguments.size}.", callExpression.paren)
+        }
+
+        return callee.call(this, arguments)
+    }
+
     override fun visitGroupingExpression(groupingExpression: GroupingExpression): Any? {
         return evaluate(groupingExpression.expression)
     }
@@ -116,8 +137,8 @@ class Interpreter(private val ctx: Context) : Visitor<Any?> {
 
         val operator = logicalExpression.operator
         when {
-            operator.type == TokenType.OR -> if(leftTruthy) return left
-            operator.type == TokenType.AND -> if(!leftTruthy) return left
+            operator.type == TokenType.OR -> if (leftTruthy) return left
+            operator.type == TokenType.AND -> if (!leftTruthy) return left
             else -> throw IllegalStateException()
         }
 
@@ -131,7 +152,7 @@ class Interpreter(private val ctx: Context) : Visitor<Any?> {
     override fun visitPrintStatement(printStatement: PrintStatement) {
         val value = evaluate(printStatement.expression)
 
-        if(value == null) {
+        if (value == null) {
             println("nill")
         } else {
             println(value)
@@ -167,7 +188,7 @@ class Interpreter(private val ctx: Context) : Visitor<Any?> {
         val condition = whileStatement.condition
         val body = whileStatement.body
 
-        while(isTruthy(evaluate(condition))) {
+        while (isTruthy(evaluate(condition))) {
             execute(body)
         }
     }
@@ -178,4 +199,12 @@ class Interpreter(private val ctx: Context) : Visitor<Any?> {
         is Boolean -> value
         else -> true
     }
+}
+
+interface LoxCallable {
+    /**
+     * Amount of arguments the callable takes
+     */
+    val arity: Int
+    fun call(interpreter: Interpreter, arguments: List<Any?>): Any?
 }

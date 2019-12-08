@@ -83,7 +83,7 @@ class Parser(private val ctx: Context, private val tokens: List<Token>) {
             TokenType.EOF
         )
 
-        while (!(this.isAtEnd || endTypes.contains(peek().type))) {
+        while (!(isAtEnd || endTypes.contains(peek().type))) {
             advance()
         }
     }
@@ -91,7 +91,7 @@ class Parser(private val ctx: Context, private val tokens: List<Token>) {
     private fun program(): List<Statement> {
         val statements = mutableListOf<Statement>()
 
-        while (!this.isAtEnd) {
+        while (!isAtEnd) {
             val decl = declaration()
             if (decl != null) {
                 statements.add(decl)
@@ -340,7 +340,38 @@ class Parser(private val ctx: Context, private val tokens: List<Token>) {
             return UnaryExpression(operator, right)
         }
 
-        return primary()
+        return call()
+    }
+
+    private fun call(): Expression {
+        var expression =  primary()
+
+        while(true) {
+            if(match(TokenType.LEFT_PAREN)) {
+                expression = finishCall(expression)
+            } else {
+                break
+            }
+        }
+
+        return expression
+    }
+
+    /**
+     * +- arguments rule, but also handles zero arguments
+     */
+    private fun finishCall(callee: Expression): Expression {
+        val arguments = mutableListOf<Expression>()
+        if(!check(TokenType.RIGHT_PAREN)) {
+            do {
+                if(arguments.size >= 255) {
+                    error(peek(), "Cannot have more than 255 arguments")
+                }
+                arguments.add(expression())
+            } while(match(TokenType.COMMA))
+        }
+        val paren = consume(TokenType.RIGHT_PAREN, "Expected ')' after arguments")
+        return CallExpression(callee, paren, arguments)
     }
 
     private fun primary(): Expression {

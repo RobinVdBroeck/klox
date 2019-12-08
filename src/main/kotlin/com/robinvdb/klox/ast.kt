@@ -15,7 +15,7 @@ abstract class Visitable {
         val functions = vClass.methods
         val function = functions.find { it.name == functionName }
             ?: throw RuntimeError("Could not find visit function called '$functionName' on visitor", null)
-        return function.invoke(visitor, this ) as T
+        return function.invoke(visitor, this) as T
     }
 }
 
@@ -36,6 +36,8 @@ data class BinaryExpression(
     val operator: Token,
     val right: Expression
 ) : Expression()
+
+data class CallExpression(val callee: Expression, val paren: Token, val arguments: List<Expression>) : Expression()
 
 data class GroupingExpression(val expression: Expression) : Expression()
 

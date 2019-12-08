@@ -6,6 +6,7 @@ package com.robinvdb.klox
 interface Visitor<E> {
     fun visitAssignExpression(assignExpression: AssignExpression): E
     fun visitBinaryExpression(binaryExpression: BinaryExpression): E
+    fun visitCallExpression(callExpression: CallExpression): E
     fun visitGroupingExpression(groupingExpression: GroupingExpression): E
     fun visitLiteralExpression(literalExpression: LiteralExpression): E
     fun visitUnaryExpression(unaryExpression: UnaryExpression): E

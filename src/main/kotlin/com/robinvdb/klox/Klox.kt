@@ -34,7 +34,7 @@ fun runFile(path: String) {
     run(contents)
 }
 
-fun run(sourceCode: String, debugMode: Boolean = false) {
+fun run(sourceCode: String, debugMode: Boolean = true) {
     // setup context
     val ctx = Context()
 
