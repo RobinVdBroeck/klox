@@ -1,0 +1,4 @@
+print "Hello world"; // "Hello world"
+var a = 5;
+var b = 6;
+print a + b / 1.0 * (5 - 4.0); // "11.0"

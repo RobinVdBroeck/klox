@@ -1,0 +1,18 @@
+var a = "scope 1 a";
+var b = "scope 1 b";
+var c = "scope 1 c";
+{
+    print a; // "scope 1 a"
+    print b; // "scope 1 b"
+    var a = "scope 2 a";
+    var b = "scope 2 b";
+    print a; // "scope 2 a"
+    {
+        print a; // "scopa 2 a"
+        a = "scope 3 a";
+    }
+    print a; // "scope 3 a"
+    print b; // "scope 2 b"
+}
+print a; // "scope 1 a"
+print c; // "scope 1 c"
