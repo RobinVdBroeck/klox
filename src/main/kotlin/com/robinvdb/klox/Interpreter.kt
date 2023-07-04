@@ -1,8 +1,10 @@
 package com.robinvdb.klox
 
 import com.robinvdb.klox.errors.RuntimeError
+import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
 
+@ExperimentalContracts
 fun checkNumberOperand(operatorToken: Token, operand: Any?) {
     contract {
         returns() implies (operand is Double)

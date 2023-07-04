@@ -1,7 +1,7 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    kotlin("jvm") version "1.3.61"
+    kotlin("jvm") version "1.8.20"
     application
 }
 
@@ -14,7 +14,7 @@ repositories {
 }
 
 dependencies {
-    implementation(kotlin("stdlib-jdk8"))
+    implementation(kotlin("stdlib"))
     implementation(kotlin("reflect"))
     testImplementation(kotlin("test"))
     testImplementation(kotlin("test-junit5"))
@@ -24,7 +24,7 @@ dependencies {
 }
 
 tasks.wrapper {
-    distributionType = Wrapper.DistributionType.ALL
+    distributionType = Wrapper.DistributionType.BIN
 }
 
 tasks.test {
@@ -33,13 +33,14 @@ tasks.test {
 
 tasks.withType<KotlinCompile>().configureEach {
     kotlinOptions.jvmTarget = "11"
-    kotlinOptions.freeCompilerArgs += "-Xuse-experimental=kotlin.contracts.ExperimentalContracts"
+    kotlinOptions.freeCompilerArgs += "-Xopt-in=kotlin.contracts.ExperimentalContracts"
 }
 
 tasks.withType<JavaExec>().configureEach {
     standardInput = System.`in`
 }
 
+/*
 tasks.register("examples") {
     group = "verification"
     description = "Runs all examples."
@@ -50,12 +51,13 @@ tasks.register("examples") {
 
             javaexec {
                 classpath = sourceSets["main"].runtimeClasspath
-                main = "com.robinvdb.klox.KloxKt"
+                //mainClass.set("com.robinvdb.klox.KloxKt")
                 args = listOf(file.path)
             }
         }
 }
+*/
 
 application {
-    mainClassName = "com.robinvdb.klox.KloxKt"
+    mainClass.set("com.robinvdb.klox.KloxKt")
 }
